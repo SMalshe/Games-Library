@@ -1,15 +1,33 @@
 import java.util.Scanner;
 
-public class TicTacToeTree {
+public class TicTacToe extends Game {
     private static final char emptyBox = ' '; //creates the 3 possible things that could be on the board
     private static final char playerToken= 'X';
     private static final char botToken = 'O';
 
-    private static char[][] board = { //creates the board
-            { ' ', ' ', ' ' },
-            { ' ', ' ', ' ' },
-            { ' ', ' ', ' ' }
-    };
+    private static char[][] board;
+
+    public void playGame() { //actually plays game
+        super.playGame();
+        System.out.println("Welcome to Tic-Tac-Toe!");
+        resetBoard(); // reset board at start of each game
+        printBoard();
+
+        while (true) {
+            playerMove(Game.scanner); // use shared scanner from Game
+            printBoard();
+            if (gameOver()) break;
+
+            System.out.println("\nAI is thinking...");
+            int[] move = bestMove();
+            board[move[0]][move[1]] = botToken;
+            printBoard();
+            if (gameOver()) break;
+        }
+
+        restartGame(); // ask player if they want to replay or return to menu
+    }
+
     private static void printBoard() { //prints out the board
         System.out.println("  0 1 2"); //coordinates
         for (int i = 0; i < 3; i++) {
@@ -25,14 +43,25 @@ public class TicTacToeTree {
     private static void playerMove(Scanner scanner) {
         int row, col;
         while (true) { //move loop
-            System.out.print("Enter your move (row and column: 0-2 0-2): ");
-            row = scanner.nextInt(); //takes next two numbers for coordinates
-            col = scanner.nextInt();
-            if (row >= 0 && row < 3 && col >= 0 && col < 3 && board[row][col] == emptyBox) { //makes sure user entered a valid coordinate
-                board[row][col] = playerToken; //places a token at the requested coordinate
-                break; //ends loop since the player didn't mess up coordinates
+            System.out.print("Enter your move (row and column: 0-2 0-2, or Q to quit): ");
+            if (scanner.hasNextInt()) {
+                row = scanner.nextInt(); //takes next two numbers for coordinates
+                col = scanner.nextInt();
+                scanner.nextLine(); // consume leftover newline
+                if (row >= 0 && row < 3 && col >= 0 && col < 3 && board[row][col] == emptyBox) { //makes sure user entered a valid coordinate
+                    board[row][col] = playerToken; //places a token at the requested coordinate
+                    break; //ends loop since the player didn't mess up coordinates
+                }
+                System.out.println("Invalid move. Try again.");
+            } else {
+                String input = scanner.nextLine().trim().toUpperCase();
+                if (input.equals("Q")) { //allow quitting back to main menu
+                    System.out.println("\nPick a new game to play!");
+                    naim();
+                    return;
+                }
+                System.out.println("Invalid input. Please enter valid coordinates or Q to quit.");
             }
-            System.out.println("Invalid move. Try again.");
         }
     }
 
@@ -97,7 +126,6 @@ public class TicTacToeTree {
         }
     }
 
-
     private static int minimax(TreeNode node, boolean isMaximizing, int alpha, int beta) { //learned about this algorithm from geeksforgeeks.com
         char winner = checkWinner(node.board); //check if this is a leaf(game won)
         if (winner != emptyBox) return node.score = evaluateBoard(node.board); //scores +10 is bot won and -10 if player won
@@ -118,7 +146,6 @@ public class TicTacToeTree {
 
         return node.score = bestScore; //give current node best score and send it back
     }
-
 
     private static int[] bestMove() {
         TreeNode root = new TreeNode(board); //makes a tree node initialized to board
@@ -154,24 +181,31 @@ public class TicTacToeTree {
         }
         return false;
     }
-    public static void main(String[] args) { //actually plays game
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Welcome to Tic-Tac-Toe!");
-        printBoard();
 
+    private void restartGame() { //handles replay option
+        System.out.println("Would you like to play again? (Y/N)");
         while (true) {
-            playerMove(scanner);
-            printBoard();
-            if (gameOver()) break;
-
-            System.out.println("\nAI is thinking...");
-            int[] move = bestMove();
-            board[move[0]][move[1]] = botToken;
-            printBoard();
-            if (gameOver()) break;
+            String input = Game.scanner.nextLine().trim().toUpperCase();
+            switch (input) {
+                case "Y":
+                    resetBoard();
+                    playGame();
+                    return;
+                case "N":
+                    System.out.println("\nPick a new game to play!");
+                    naim();
+                    return;
+                default:
+                    System.out.println("Invalid input. Please enter Y or N.");
+            }
         }
-        scanner.close();
+    }
+
+    private void resetBoard() { //resets the board for a new game
+        board = new char[][]{
+                {emptyBox, emptyBox, emptyBox},
+                {emptyBox, emptyBox, emptyBox},
+                {emptyBox, emptyBox, emptyBox}
+        };
     }
 }
-
-
