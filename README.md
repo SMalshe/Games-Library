@@ -1,9 +1,11 @@
 # Games Library
 This is a small collection of Java games I’ve been building, along with some basic reusable classes. The main goal was to learn and experiment with object-oriented design, game logic, and a bit of AI. Right now, everything runs in the console, but the structure should make it easy to add more games over time.
 ## What’s Included
+Game class - Main menu that accesses the other classes to run games
 Number Guesser – a simple guessing game where the player tries to find the hidden number.
 Tic-Tac-Toe – a full game against an AI that uses minimax with alpha-beta pruning, so it plays optimally.
-Card and Deck classes – generic building blocks that can be reused for card-based games (e.g., Blackjack or Poker).
+Blackjack – a full implementation of the classic card game, where the player can hit or stand against a dealer AI that follows standard rules, but will sometimes make risky plays. Features include ace value adjustment, bust detection, and replay options.
+Card and Deck classes – generic building blocks that can be reused for card-based games
 ## How It’s Organized
 src/  
   │── Card.java - Represents a single playing card  
